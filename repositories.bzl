@@ -20,7 +20,7 @@ def pandoc_repositories():
     http_archive(
         name = "pandoc_bin_linux-x86_64",
         build_file_content = BUILD_CONTENT_UNIX,
-        sha256 = "8ebf1b6c852d77290345afdd565547bdbd5de7888362f5a69fc7f51aeb8696a2",
+        sha256 = "103df36dc21081b7205d763ef7705e340eb0ea7e18694239b328a549892cc007",
         strip_prefix = "pandoc-{v}".format(v = PANDOC_VERSION),
         url = "https://github.com/jgm/pandoc/releases/download/{v}/pandoc-{v}-linux-amd64.tar.gz".format(v = PANDOC_VERSION),
     )

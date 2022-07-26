@@ -1,6 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-PANDOC_VERSION = "2.8.0.1"
+PANDOC_VERSION = "2.18"
 
 BUILD_CONTENT_UNIX = """
 filegroup(

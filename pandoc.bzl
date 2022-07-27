@@ -70,12 +70,7 @@ def _pandoc_impl(ctx):
         ),
         outputs = [ctx.outputs.output],
     )
-    return [
-         DefaultInfo(
-             files = depset([ctx.outputs.output] + data_outputs ),
-             runfiles = ctx.runfiles(files=data_outputs)
-         )
-     ]
+ 
 
 _pandoc = rule(
     attrs = {

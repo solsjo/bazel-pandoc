@@ -52,7 +52,7 @@ PANDOC_EXTENSIONS = {
 def _pandoc_impl(ctx):
     toolchain = ctx.toolchains["@bazel_pandoc//:pandoc_toolchain_type"]
     cli_args = []
-    cli_args.extend(ctx.attr.options)
+    cli_args.extend([ ctx.expand_location(opt) for opt in ctx.attr.options)
     if ctx.attr.from_format:
         cli_args.extend(["--from", ctx.attr.from_format])
     if ctx.attr.to_format:

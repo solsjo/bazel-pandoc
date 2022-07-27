@@ -51,8 +51,9 @@ PANDOC_EXTENSIONS = {
 
 def _pandoc_impl(ctx):
     toolchain = ctx.toolchains["@bazel_pandoc//:pandoc_toolchain_type"]
+    inputs = [ctx.file.src] + ctx.files.data
     cli_args = []
-    cli_args.extend([ ctx.expand_location(opt) for opt in ctx.attr.options)
+    cli_args.extend([ ctx.expand_location(opt, inputs) for opt in ctx.attr.options)
     if ctx.attr.from_format:
         cli_args.extend(["--from", ctx.attr.from_format])
     if ctx.attr.to_format:
@@ -64,11 +65,17 @@ def _pandoc_impl(ctx):
         executable = toolchain.pandoc.files.to_list()[0].path,
         arguments = cli_args,
         inputs = depset(
-            direct = ctx.files.src,
+            direct = inputs,
             transitive = [toolchain.pandoc.files],
         ),
         outputs = [ctx.outputs.output],
     )
+    return [
+         DefaultInfo(
+             files = depset([ctx.outputs.output] + data_outputs ),
+             runfiles = ctx.runfiles(files=data_outputs)
+         )
+     ]
 
 _pandoc = rule(
     attrs = {
@@ -77,6 +84,7 @@ _pandoc = rule(
         "src": attr.label(allow_single_file = True, mandatory = True),
         "to_format": attr.string(),
         "output": attr.output(mandatory = True),
+        "data": attr.label_list(mandatory = False),
     },
     toolchains = ["@bazel_pandoc//:pandoc_toolchain_type"],
     implementation = _pandoc_impl,

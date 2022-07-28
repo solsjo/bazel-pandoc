@@ -69,7 +69,7 @@ def _pandoc_impl(ctx):
     for k,v in ctx.attr.env.items():
         if "$(location" in v or "$(execpath" in v or "$(rootpath" in v:
             env[k] = ctx.expand_location(v, ctx.attr.data).split(" ")[0]
-        else
+        else:
             env[k] = v
     ctx.actions.run(
         mnemonic = "Pandoc",

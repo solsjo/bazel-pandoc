@@ -53,7 +53,7 @@ def _pandoc_impl(ctx):
     toolchain = ctx.toolchains["@bazel_pandoc//:pandoc_toolchain_type"]
     inputs = [ctx.file.src] + ctx.files.data + ctx.files.filters
     cli_args = []
-    cli_args.extend([ ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
+    #cli_args.extend([ ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
     filters = []
     for filter in ctx.attr.filters:
         filt = ctx.expand_location("$(locations {})".format(filter.label), ctx.attr.filters).split(" ")[0]
@@ -65,6 +65,9 @@ def _pandoc_impl(ctx):
         cli_args.extend(["--to", ctx.attr.to_format])
     cli_args.extend(["-o", ctx.outputs.output.path])
     cli_args.extend([ctx.file.src.path])
+    env = {}
+    for k,v in ctx.attr.env.items():
+        env[k] = ctx.expand_location(v)
     ctx.actions.run(
         mnemonic = "Pandoc",
         executable = toolchain.pandoc.files.to_list()[0].path,
@@ -73,6 +76,7 @@ def _pandoc_impl(ctx):
             direct = inputs,
             transitive = [toolchain.pandoc.files],
         ),
+        env = env,
         outputs = [ctx.outputs.output],
     )
  
@@ -86,6 +90,7 @@ _pandoc = rule(
         "output": attr.output(mandatory = True),
         "data": attr.label_list(mandatory = False),
         "filters": attr.label_list(mandatory = False),
+        "env": attr.string_dict(),
     },
     toolchains = ["@bazel_pandoc//:pandoc_toolchain_type"],
     implementation = _pandoc_impl,

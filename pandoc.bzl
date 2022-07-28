@@ -67,7 +67,7 @@ def _pandoc_impl(ctx):
     cli_args.extend([ctx.file.src.path])
     env = {}
     for k,v in ctx.attr.env.items():
-        env[k] = ctx.expand_location(v)
+        env[k] = ctx.expand_location(v, ctx.attr.data)
     ctx.actions.run(
         mnemonic = "Pandoc",
         executable = toolchain.pandoc.files.to_list()[0].path,

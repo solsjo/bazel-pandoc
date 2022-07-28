@@ -51,9 +51,14 @@ PANDOC_EXTENSIONS = {
 
 def _pandoc_impl(ctx):
     toolchain = ctx.toolchains["@bazel_pandoc//:pandoc_toolchain_type"]
-    inputs = [ctx.file.src] + ctx.files.data
+    inputs = [ctx.file.src] + ctx.files.data + ctx.files.filters
     cli_args = []
     cli_args.extend([ ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
+    filters = []
+    for filter in ctx.attr.filters:
+        filt = ctx.expand_location("$locations({})".format(filter), ctx.attr.data).split(" ")[0]
+        filters.extend(["--filter {}".format(filt)])
+    cli_args.extend(filters)
     if ctx.attr.from_format:
         cli_args.extend(["--from", ctx.attr.from_format])
     if ctx.attr.to_format:
@@ -80,6 +85,7 @@ _pandoc = rule(
         "to_format": attr.string(),
         "output": attr.output(mandatory = True),
         "data": attr.label_list(mandatory = False),
+        "filters": attr.label_list(mandatory = False),
     },
     toolchains = ["@bazel_pandoc//:pandoc_toolchain_type"],
     implementation = _pandoc_impl,

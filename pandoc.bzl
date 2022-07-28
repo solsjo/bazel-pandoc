@@ -56,8 +56,8 @@ def _pandoc_impl(ctx):
     cli_args.extend([ ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
     filters = []
     for filter in ctx.attr.filters:
-        filt = ctx.expand_location("$locations({})".format(filter), ctx.attr.data).split(" ")[0]
-        filters.extend(["--filter {}".format(filt)])
+       
+        filters.extend(["--filter {}".format(filter.files.to_list()[0].path)])
     cli_args.extend(filters)
     if ctx.attr.from_format:
         cli_args.extend(["--from", ctx.attr.from_format])

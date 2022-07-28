@@ -77,7 +77,9 @@ def _pandoc_impl(ctx):
         arguments = cli_args,
         inputs = depset(
             direct = inputs,
-            transitive = [toolchain.pandoc.files],
+            transitive = [toolchain.pandoc.files] + 
+                [dat[DefaultInfo].files for dat in ctx.attr.data] +
+                [dat[DefaultInfo].runfiles for dat in ctx.attr.data],
         ),
         env = env,
         outputs = [ctx.outputs.output],

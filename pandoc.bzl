@@ -77,12 +77,12 @@ def _pandoc_impl(ctx):
     for filter in ctx.attr.filters:
         if filter[DefaultInfo].files_to_run:
             tools.append(filter[DefaultInfo].files_to_run)
-        tools.append(filter[DefaultInfo].files)
+        tools.extend(filter[DefaultInfo].files.to_list())
 
     for dat in ctx.attr.data:
         if dat[DefaultInfo].files_to_run:
             tools.append(dat[DefaultInfo].files_to_run)
-            tools.append(dat[DefaultInfo].files)
+            tools.extend(dat[DefaultInfo].files.to_list())
 
     ctx.actions.run(
         mnemonic = "Pandoc",

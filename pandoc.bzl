@@ -80,6 +80,9 @@ def _pandoc_impl(ctx):
             transitive = [toolchain.pandoc.files] + 
                 [dat[DefaultInfo].files for dat in ctx.attr.data]
         ),
+        tools = [
+            filter for filter in ctx.attr.filters
+        ],
         env = env,
         outputs = [ctx.outputs.output],
     )

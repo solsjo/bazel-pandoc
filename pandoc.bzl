@@ -75,8 +75,8 @@ def _pandoc_impl(ctx):
     tools = []
     
     for filter in ctx.attr.filters:
-        if FilesToRunProvider in filter:
-            tools.append(filter[FilesToRunProvider])
+        if filter[DefaultInfo].files_to_run:
+            tools.append(filter[DefaultInfo].files_to_run)
         tools.extend(filter[DefaultInfo].files)
 
     ctx.actions.run(

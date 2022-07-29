@@ -71,6 +71,14 @@ def _pandoc_impl(ctx):
             env[k] = ctx.expand_location(v, ctx.attr.data).split(" ")[0]
         else:
             env[k] = v
+
+    tools = []
+    
+    for filter in ctx.attr.filters:
+        if FilesToRunProvider in filter:
+            tools.append(filter[FilesToRunProvider])
+        tools.extend(filter[DefaultInfo].files)
+
     ctx.actions.run(
         mnemonic = "Pandoc",
         executable = toolchain.pandoc.files.to_list()[0].path,
@@ -80,9 +88,7 @@ def _pandoc_impl(ctx):
             transitive = [toolchain.pandoc.files] + 
                 [dat[DefaultInfo].files for dat in ctx.attr.data]
         ),
-        tools = [
-            filter for filter in ctx.attr.filters
-        ],
+        tools = tools,
         env = env,
         outputs = [ctx.outputs.output],
     )

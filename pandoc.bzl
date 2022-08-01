@@ -106,7 +106,7 @@ _pandoc = rule(
         "src": attr.label(allow_single_file = True, mandatory = True),
         "to_format": attr.string(),
         "output": attr.output(mandatory = True),
-        "data": attr.label_list(mandatory = False),
+        "data": attr.label_list(mandatory = False, allow_files=True),
         "filters": attr.label_list(mandatory = False),
         "env": attr.string_dict(),
     },

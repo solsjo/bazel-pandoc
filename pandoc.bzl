@@ -53,7 +53,6 @@ def _pandoc_impl(ctx):
     toolchain = ctx.toolchains["@bazel_pandoc//:pandoc_toolchain_type"]
     inputs = [ctx.file.src] + ctx.files.data + ctx.files.filters
     cli_args = []
-    #cli_args.extend([ ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
     filters = []
     for filter in ctx.attr.filters:
         filt = ctx.expand_location("$(locations {})".format(filter.label), ctx.attr.filters).split(" ")[0]
@@ -84,12 +83,28 @@ def _pandoc_impl(ctx):
             tools.append(dat[DefaultInfo].files_to_run)
             tools.extend(dat[DefaultInfo].files.to_list())
 
+    cli_args.extend(["--resource-path",
+                      ctx.label.package])
+    for target in ctx.attr.data:
+        for df in target.files.to_list():
+            if "self-contained" in ctx.attr.options:
+                pandoc_inputs.append(df)
+            else:
+                data_inputs.append(df)
+    for df in data_inputs:
+        outfile = ctx.actions.declare_file(df.basename)
+        data_outputs.extend([outfile])
+        ctx.actions.expand_template(template=df,
+                                    output = outfile,
+                                    substitutions={})
+    cli_args.extend([ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
+
     ctx.actions.run(
         mnemonic = "Pandoc",
         executable = toolchain.pandoc.files.to_list()[0].path,
         arguments = cli_args,
         inputs = depset(
-            direct = inputs,
+            direct = pandoc_inputs + inputs,
             transitive = [toolchain.pandoc.files] + 
                 [dat[DefaultInfo].files for dat in ctx.attr.data]
         ),
@@ -97,7 +112,10 @@ def _pandoc_impl(ctx):
         env = env,
         outputs = [ctx.outputs.output],
     )
- 
+    return [
+         DefaultInfo(files = depset([ctx.outputs.output] + data_outputs ),
+         runfiles = ctx.runfiles(files=data_outputs))
+     ]
 
 _pandoc = rule(
     attrs = {

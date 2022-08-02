@@ -88,9 +88,13 @@ def _pandoc_impl(ctx):
 
     cli_args.extend(["--resource-path",
                       ctx.label.package])
+    self_contained = False
+    for opt in ctx.attr.options:
+        if "self-contained" in opt:
+            self_contained = True
     for target in ctx.attr.data:
         for df in target.files.to_list():
-            if "self-contained" in ctx.attr.options:
+            if self-contained:
                 pandoc_inputs.append(df)
             else:
                 data_inputs.append(df)

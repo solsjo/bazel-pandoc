@@ -94,7 +94,7 @@ def _pandoc_impl(ctx):
             self_contained = True
     for target in ctx.attr.data:
         for df in target.files.to_list():
-            if self-contained:
+            if self_contained:
                 pandoc_inputs.append(df)
             else:
                 data_inputs.append(df)

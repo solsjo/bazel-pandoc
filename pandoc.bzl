@@ -54,6 +54,9 @@ def _pandoc_impl(ctx):
     inputs = [ctx.file.src] + ctx.files.data + ctx.files.filters
     cli_args = []
     filters = []
+    pandoc_inputs = []
+    data_inputs = []
+    data_outputs = []
     for filter in ctx.attr.filters:
         filt = ctx.expand_location("$(locations {})".format(filter.label), ctx.attr.filters).split(" ")[0]
         filters.extend(["--filter", filt])

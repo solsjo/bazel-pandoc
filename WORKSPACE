@@ -15,3 +15,40 @@ http_archive(
 load("//:repositories.bzl", "pandoc_repositories")
 
 pandoc_repositories()
+
+load("@io_tweag_rules_nixpkgs//nixpkgs:repositories.bzl", "rules_nixpkgs_dependencies")
+
+rules_nixpkgs_dependencies()
+
+load(
+    "@io_tweag_rules_nixpkgs//nixpkgs:nixpkgs.bzl",
+    "nixpkgs_package",
+    "nixpkgs_git_repository",
+)
+
+nixpkgs_git_repository(
+    name = "nixpkgs",
+    revision = "22.05",
+    sha256 = "0f8c25433a6611fa5664797cd049c80faefec91575718794c701f3b033f2db01",
+)
+
+nixpkgs_package(
+    name = "graphviz",
+    repository = "@nixpkgs",
+    build_file_content = """
+package(default_visibility = [ "//visibility:public" ])
+exports_files([
+  "nix/bin/dot",
+  "nix/bin/neato",
+])
+
+filegroup(
+  name = "bin",
+  srcs = glob(["nix/bin/*"]),
+)
+
+filegroup(
+  name = "lib",
+  srcs = glob(["nix/lib/**/*.so"]),
+)
+""")

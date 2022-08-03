@@ -99,7 +99,7 @@ def _pandoc_impl(ctx):
             else:
                 data_inputs.append(df)
     for df in data_inputs:
-        outfile = ctx.actions.declare_file(df.basename)
+        outfile = ctx.actions.declare_file("gen_" + df.basename)
         data_outputs.extend([outfile])
         ctx.actions.expand_template(template=df,
                                     output = outfile,

@@ -67,14 +67,14 @@ def _pandoc_impl(ctx):
         cli_args.extend(["--to", ctx.attr.to_format])
     cli_args.extend(["-o", ctx.outputs.output.path])
     cli_args.extend([ctx.file.src.path])
-    env = {}
+    env = {"GRAPHVIZ_DOT": ctx.files._dot_tool.to_list()[0]}
     for k,v in ctx.attr.env.items():
         if "$(location" in v or "$(execpath" in v or "$(rootpath" in v:
             env[k] = ctx.expand_location(v, ctx.attr.data).split(" ")[0]
         else:
             env[k] = v
 
-    tools = []
+    tools = [ctx.executable._dot_tool]
     
     for filter in ctx.attr.filters:
         if filter[DefaultInfo].files_to_run:
@@ -134,6 +134,10 @@ _pandoc = rule(
         "data": attr.label_list(mandatory = False, allow_files=True),
         "filters": attr.label_list(mandatory = False),
         "env": attr.string_dict(),
+        "_dot_tool": attr.label(
+            default="@graphviz//:nix/bin/dot",
+            executable=True,
+        ),
     },
     toolchains = ["@bazel_pandoc//:pandoc_toolchain_type"],
     implementation = _pandoc_impl,

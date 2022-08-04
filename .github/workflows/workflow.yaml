@@ -1,6 +1,5 @@
-Bytes
- name: Build and Deploy
-on: [push]
+name: Build and Deploy
+  on: [push]
 permissions:
   contents: write
 jobs:

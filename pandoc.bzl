@@ -137,6 +137,7 @@ _pandoc = rule(
         "_dot_tool": attr.label(
             default="@graphviz//:nix/bin/dot",
             executable=True,
+            cfg="exec",
         ),
     },
     toolchains = ["@bazel_pandoc//:pandoc_toolchain_type"],

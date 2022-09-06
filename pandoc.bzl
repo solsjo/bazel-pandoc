@@ -113,6 +113,8 @@ def _pandoc_impl(ctx):
                       ".:" + ctx.label.package + ":" + ":".join(resource_paths)])
     cli_args.extend([ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
 
+    print(cli_args)
+    
     ctx.actions.run(
         mnemonic = "Pandoc",
         executable = toolchain.pandoc.files.to_list()[0].path,

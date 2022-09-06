@@ -110,7 +110,7 @@ def _pandoc_impl(ctx):
     for inp in inputs:
         resource_paths.append(inp.dirname)
     cli_args.extend(["--resource-path",
-                      ".:" + ctx.label.package + ":" + ":".join(resource_paths)])
+                      ".:" + "external" + ":" + "external/bazel-pandoc-example/example" + ":" + "external/bazel-pandoc-example" + ":" + ctx.label.package + ":" + ":".join(resource_paths)])
     cli_args.extend([ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
 
     print(cli_args)

@@ -86,9 +86,8 @@ def _pandoc_impl(ctx):
             tools.append(dat[DefaultInfo].files_to_run)
             tools.extend(dat[DefaultInfo].files.to_list())
 
-    cli_args.extend(["--resource-path",
-                      ctx.label.package])
     self_contained = False
+    resource_paths = []
     for opt in ctx.attr.options:
         if "self-contained" in opt:
             self_contained = True
@@ -96,14 +95,22 @@ def _pandoc_impl(ctx):
         for df in target.files.to_list():
             if self_contained:
                 pandoc_inputs.append(df)
+                resource_paths.append(df.dirname)
             else:
                 data_inputs.append(df)
+                resource_paths.append(df.dirname)
+                
+                
     for df in data_inputs:
         outfile = ctx.actions.declare_file("gen_" + df.basename)
         data_outputs.extend([outfile])
         ctx.actions.expand_template(template=df,
                                     output = outfile,
                                     substitutions={})
+    for inp in inputs:
+        resource_paths.append(inp.dirname)
+    cli_args.extend(["--resource-path",
+                      ".:" + ctx.label.package + ":" + ":".join(resource_paths)])
     cli_args.extend([ctx.expand_location(opt, ctx.attr.data) for opt in ctx.attr.options])
 
     ctx.actions.run(
